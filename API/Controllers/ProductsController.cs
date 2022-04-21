@@ -2,19 +2,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using API.Dtos;
+using API.Errors;
 using AutoMapper;
 using Core.Entities;
 using Core.Interfaces;
 using Core.Specifications;
 using Infrastructure.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace API.Controllers
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class ProductsController : ControllerBase
+    // [ApiController]
+    // [Route("api/[controller]")]
+    public class ProductsController : BaseApiController //ControllerBase
     {
         // private readonly IProductRepository _productRepository;
         // public ProductsController(IProductRepository productRepository)
@@ -100,6 +102,8 @@ namespace API.Controllers
 
         // Using DTO
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status200OK)] // Swagger configuration
+        [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)] // Swagger Configuration
         public async Task<ActionResult<ProductToReturnDto>> GetProduct(int id)
         {
             // return await _productRepository.GetProductByIdAsync(id);
@@ -112,6 +116,8 @@ namespace API.Controllers
 
             // return await _productGenericRepo.GetEntityWithSpec(spec);
             var product = await _productGenericRepo.GetEntityWithSpec(spec);
+
+            if (product == null) return NotFound(new ApiResponse(404));
 
             // Using DTO
             // return new ProductToReturnDto
