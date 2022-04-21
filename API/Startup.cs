@@ -69,12 +69,14 @@ namespace API
 
             services.AddSwaggerDocumentation();
 
-            services.AddCors(opt => 
-            {
-                opt.AddPolicy("CorsPolicy", policy => {
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost/4200");
-                });
-            });
+            // services.AddCors(opt => 
+            // {
+            //     opt.AddPolicy("CorsPolicy", policy => {
+            //         policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:4200");
+            //     });
+            // });
+
+            services.AddCors();
             
             // This is added in SwaggerServiceExtensions    
             // services.AddSwaggerGen(c =>
@@ -110,7 +112,11 @@ namespace API
 
             app.UseStaticFiles();
 
-            app.UseCors("CorsPolicy");
+            // app.UseCors("CorsPolicy");
+
+            app.UseCors(x => x.AllowAnyHeader()
+                .AllowAnyMethod()
+                .WithOrigins("https://localhost:4200"));
 
             app.UseAuthorization();
 
