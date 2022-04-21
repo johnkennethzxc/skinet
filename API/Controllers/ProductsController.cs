@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using API.Dtos;
 using API.Errors;
+using API.Helpers;
 using AutoMapper;
 using Core.Entities;
 using Core.Interfaces;
@@ -57,8 +58,40 @@ namespace API.Controllers
         // }
 
         // Using DTO
+        // [HttpGet]
+        // public async Task<ActionResult<IReadOnlyList<ProductToReturnDto>>> GetProducts(
+        //     /*string sort, int? brandId, int? typeId*/ [FromQuery] ProductSpecParams productParams)
+        // {
+        //     // return Ok(await _productRepository.GetProductsAsync());
+
+        //     // Using Generic Repository
+        //     // return Ok(await _productGenericRepo.ListAllAsync());
+
+        //     // Using Generic Repository with Specification
+        //     var spec = new ProductsWithTypesAndBrandsSpecification(/*sort, brandId, typeId*/ productParams);
+        //     var products = await _productGenericRepo.ListAsync(spec);
+            
+        //     // return products.Select(product => new ProductToReturnDto
+        //     // {
+        //     //     Id = product.Id,
+        //     //     Name = product.Name,
+        //     //     Description = product.Description,
+        //     //     PictureUrl = product.PictureUrl,
+        //     //     Price = product.Price,
+        //     //     ProductBrand = product.ProductBrand.Name,
+        //     //     ProductType = product.ProductType.Name
+        //     // }).ToList();
+
+        //     // Using AutoMapper
+        //     return Ok(_mapper
+        //         .Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products));
+
+        // }
+
+        // Using Pagination and getting the details of the pagination
         [HttpGet]
-        public async Task<ActionResult<IReadOnlyList<ProductToReturnDto>>> GetProducts()
+        public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetProducts(
+            /*string sort, int? brandId, int? typeId*/ [FromQuery] ProductSpecParams productParams)
         {
             // return Ok(await _productRepository.GetProductsAsync());
 
@@ -66,8 +99,16 @@ namespace API.Controllers
             // return Ok(await _productGenericRepo.ListAllAsync());
 
             // Using Generic Repository with Specification
-            var spec = new ProductsWithTypesAndBrandsSpecification();
+            var spec = new ProductsWithTypesAndBrandsSpecification(/*sort, brandId, typeId*/ productParams);
+            var countSpec = new ProductWithFiltersForCountSpecification(productParams);
+            var totalItems = await _productGenericRepo.CountAsync(countSpec);
+
             var products = await _productGenericRepo.ListAsync(spec);
+
+            var data = _mapper
+                .Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products);
+            
+            return Ok(new Pagination<ProductToReturnDto>(productParams.PageIndex, productParams.PageSize, totalItems, data));
             
             // return products.Select(product => new ProductToReturnDto
             // {
@@ -81,8 +122,8 @@ namespace API.Controllers
             // }).ToList();
 
             // Using AutoMapper
-            return Ok(_mapper
-                .Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products));
+            // return Ok(_mapper
+            //     .Map<IReadOnlyList<Product>, IReadOnlyList<ProductToReturnDto>>(products));
 
         }
 
