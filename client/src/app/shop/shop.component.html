@@ -10,7 +10,9 @@
       <ng-container *ngIf="productBrands && productTypes">
         <h5 class="text-warning ml-3 mt-4 mb-3">Sort</h5>
         <select class="custom-select mb-4" (change)="onSortSelected($event.target.value)">
-          <option *ngFor="let sort of sortOptions" [value]="sort.value">{{sort.name}}
+          <option *ngFor="let sort of sortOptions"
+            [selected]="shopParams.sortSelected === sort.value"
+            [value]="sort.value">{{sort.name}}
           </option>
         </select>
         <h5 class="text-warning ml-3">Brands</h5>
@@ -80,7 +82,11 @@
           firstText="&laquo;"
           lastText="&raquo;">
         </pagination> -->
-        <app-pager [pageSize]="shopParams.pageSize" [totalCount]="totalCount" (pageChanged)="onPageChanged($event)">
+        <app-pager
+          [pageSize]="shopParams.pageSize"
+          [totalCount]="totalCount"
+          [pageNumber]="shopParams.pageNumber"
+          (pageChanged)="onPageChanged($event)">
         </app-pager>
       </div>
 

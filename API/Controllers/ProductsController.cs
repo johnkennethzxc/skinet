@@ -89,6 +89,7 @@ namespace API.Controllers
         // }
 
         // Using Pagination and getting the details of the pagination
+        [Cached(600)]
         [HttpGet]
         public async Task<ActionResult<Pagination<ProductToReturnDto>>> GetProducts(
             /*string sort, int? brandId, int? typeId*/ [FromQuery] ProductSpecParams productParams)
@@ -142,6 +143,7 @@ namespace API.Controllers
         // }
 
         // Using DTO
+        [Cached(600)]
         [HttpGet("{id}")]
         [ProducesResponseType(StatusCodes.Status200OK)] // Swagger configuration
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status404NotFound)] // Swagger Configuration
@@ -175,7 +177,8 @@ namespace API.Controllers
             // Using AutoMapper
             return _mapper.Map<Product, ProductToReturnDto>(product);
         }
-
+        
+        [Cached(600)]
         [HttpGet("brands")]
         public async Task<ActionResult<IReadOnlyList<ProductBrand>>> GetProductBrands()
         {
@@ -185,6 +188,7 @@ namespace API.Controllers
             return Ok(await _productBrandGenericRepo.ListAllAsync());
         }
 
+        [Cached(600)]
         [HttpGet("types")]
         public async Task<ActionResult<IReadOnlyList<ProductType>>> GetProductTypes()
         {
